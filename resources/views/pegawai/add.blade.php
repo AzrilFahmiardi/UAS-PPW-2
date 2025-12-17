@@ -45,6 +45,14 @@
                         <input type="checkbox" name="is_active" id="is_active" checked />
                         <label for="is_active" class="text-sm">Active</label>
                     </div>
+                    <div class="mb-3">
+                        <label class="block text-sm font-medium text-gray-700">Captcha</label>
+                        <div class="flex items-center gap-2">
+                            <img src="{{ captcha_src() }}" id="captcha-img" class="h-12" alt="captcha" />
+                            <button type="button" id="refresh-captcha" class="rounded-md bg-gray-200 px-3 py-1 text-sm">Refresh</button>
+                        </div>
+                        <input type="text" name="captcha" value="" placeholder="Masukkan kode captcha" class="w-full rounded-md border px-3 py-2 text-sm mt-2" />
+                    </div>
                     <div class="flex gap-2">
                         <button type="submit" class="rounded-md bg-green-600 px-4 py-2 text-sm text-white hover:bg-green-700">Simpan</button>
                         <a href="{{ route('pegawai.index') }}" class="rounded-md bg-gray-200 px-4 py-2 text-sm">Batal</a>
@@ -54,3 +62,12 @@
         </div>
     </section>
 @endsection
+@push('js')
+<script>
+    document.getElementById('refresh-captcha')?.addEventListener('click', function () {
+        const img = document.getElementById('captcha-img');
+        if (!img) return;
+        img.src = '{{ captcha_src() }}' + '?' + Date.now();
+    });
+</script>
+@endpush

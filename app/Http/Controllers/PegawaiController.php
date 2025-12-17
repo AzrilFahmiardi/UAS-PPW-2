@@ -33,6 +33,7 @@ class PegawaiController extends Controller
             'nama' => 'required|string',
             'email' => 'required|email|unique:pegawai,email',
             'gender' => 'required|in:male,female',
+            'captcha' => 'required|captcha',
         ]);
 
         if ($validator->fails()) return redirect()->back()->withErrors($validator)->withInput();
