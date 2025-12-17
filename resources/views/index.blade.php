@@ -21,70 +21,62 @@
 @push('js')
     <script src="{{ asset('plugins/chartjs-4/chart-4.5.0.js') }}"></script>
     <script>
+        // Data from server
+        const genderCounts = {!! json_encode($genderCounts ?? []) !!};
+        const topPekerjaan = {!! json_encode($topPekerjaan->map(fn($p) => ['nama' => $p->nama, 'count' => $p->pegawai_count])) !!};
+
+        // Prepare pie data (ensure order Male, Female)
+        const pieLabels = ['Male','Female'];
+        const pieData = [
+            (genderCounts['male'] ?? 0),
+            (genderCounts['female'] ?? 0),
+        ];
+
         const ctx1 = document.getElementById('chart1');
         new Chart(ctx1, {
             type: 'pie',
             data: {
-                labels: ["Male", "Female"],
+                labels: pieLabels,
                 datasets: [{
                     label: 'Jumlah',
-                    data: [4644,4800],
-                    backgroundColor: [
-                        '#3b82f6',
-                        '#ec4899'
-                    ]
+                    data: pieData,
+                    backgroundColor: ['#3b82f6', '#ec4899']
                 }]
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
                 plugins: {
-                    legend: {
-                        position: 'bottom',
-                    },
-                    title: {
-                        display: true,
-                        text: 'Persentase Pegawai Berdasarkan Gender'
-                    }
+                    legend: { position: 'bottom' },
+                    title: { display: true, text: 'Persentase Pegawai Berdasarkan Gender' }
                 }
             }
         });
+
+        // Bar chart for top pekerjaan
+        const barLabels = topPekerjaan.map(p => p.nama);
+        const barData = topPekerjaan.map(p => p.count);
 
         const ctx2 = document.getElementById('chart2').getContext('2d');
         new Chart(ctx2, {
             type: 'bar',
             data: {
-                labels: [
-                    "Software Engineer",
-                    "Data Analyst",
-                    "Project Manager",
-                    "System Administrator",
-                    "UI/UX Designer"
-                ],
+                labels: barLabels,
                 datasets: [{
                     label: 'Jumlah Pegawai',
-                    data: [110, 95, 85, 75, 70],
+                    data: barData,
                     backgroundColor: '#C0392B',
                     borderColor: '#922B21',
                     borderWidth: 1,
-                    borderRadius: 4, // rounded bars
+                    borderRadius: 4,
                     barPercentage: 0.6,
                 }]
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
-                plugins: {
-                    title: {
-                        display: true,
-                        text: 'Top 5 Pekerjaan Dengan Jumlah Pegawai Paling Banyak'
-                    }
-                },
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                    },
-                }
+                plugins: { title: { display: true, text: 'Top 5 Pekerjaan Dengan Jumlah Pegawai Paling Banyak' } },
+                scales: { y: { beginAtZero: true } }
             }
         });
     </script>
