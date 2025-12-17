@@ -11,9 +11,13 @@ class PekerjaanController extends Controller
 {
     public function index(Request $request) {
         $keyword = $request->get('keyword');
-        $data = Pekerjaan::withCount('pegawai')->when($keyword, function ($query) use ($keyword) {
-            $query->where('nama', 'like', "%{$keyword}%")->orWhere('deskripsi', 'like', "%{$keyword}%");
-        })->paginate(10);
+        $sort = in_array($request->get('sort'), ['created_at','updated_at']) ? $request->get('sort') : 'updated_at';
+        $order = in_array($request->get('order'), ['asc','desc']) ? $request->get('order') : 'desc';
+
+        $data = Pekerjaan::withCount('pegawai')
+            ->when($keyword, function ($query) use ($keyword) {
+                $query->where('nama', 'like', "%{$keyword}%")->orWhere('deskripsi', 'like', "%{$keyword}%");
+            })->orderBy($sort, $order)->paginate(10)->withQueryString();
         return view('pekerjaan.index', compact('data'));
     }
 
